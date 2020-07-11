@@ -1,241 +1,204 @@
 ---
-title: API Reference
+title: AuthArmor API Reference
 
 language_tabs: # must be one of https://git.io/vQNgJ
-  - shell
-  - ruby
-  - python
-  - javascript
+  - shell: cURL
 
-toc_footers:
+<!-- toc_footers:
   - <a href='#'>Sign Up for a Developer Key</a>
-  - <a href='https://github.com/slatedocs/slate'>Documentation Powered by Slate</a>
+  - <a href='https://github.com/slatedocs/slate'>Documentation Powered by Slate</a> -->
 
 includes:
   - errors
 
 search: true
 
-code_clipboard: true
 ---
 
 # Introduction
 
-Welcome to the Kittn API! You can use our API to access Kittn API endpoints, which can get information on various cats, kittens, and breeds in our database.
+Welcome to the Auth Armor API! 
 
-We have language bindings in Shell, Ruby, Python, and JavaScript! You can view code examples in the dark area to the right, and you can switch the programming language of the examples with the tabs in the top right.
 
-This example API documentation page was created with [Slate](https://github.com/slatedocs/slate). Feel free to edit it and use it as a base for your own API's documentation.
+To obtain an Access token, you must make a request to the Auth Armor OAuth2 server using the client_credentials OAuth2 grant.
 
-# Authentication
 
-> To authorize, use this code:
+| Param | Required | Description |
+| ---- | ----- | ---- | 
+| client_id | Yes | Client ID from Auth Armor |
+| client_secret | Yes | Client Secret from Auth Armor |
+| scope | No | Permissions that the token will be allowed to perform |
 
-```ruby
-require 'kittn'
 
-api = Kittn::APIClient.authorize!('meowmeowmeow')
-```
+## API Access
 
-```python
-import kittn
+Both the `client_id` and `client_secret` are obtained via the developer dashboard located at [https://dashboard.autharmor.com](https://dashboard.autharmor.com)
 
-api = kittn.authorize('meowmeowmeow')
-```
+Login then select or create a project. Navigate to the Api Access section and create a new api client. when you create a client, you are asked to give the client permissions, or scopes; select one more more scopes here. Please see the scopes section for more info. After client creation, you will be presented with a `client_id` and `client_secret`. Copy these values into your request.
 
-```shell
-# With shell, you can just pass the correct header with each request
-curl "api_endpoint_here"
-  -H "Authorization: meowmeowmeow"
-```
+## Scopes
 
-```javascript
-const kittn = require('kittn');
+Scopes are permissions that the token will be allowed to perform. There are two scopes allowed. They are `aarmor.api.generate_invite_code` and `aarmor.api.request_auth`. When you create an api access client, you will be asked to select what scopes the client is allowed to perform. When requesting a token using that client, you can optionally leave the scope field blank. If left blank, all of the scopes that are assigned to the client will be applied to the token. If you specify the scopes in the token request, the token will then only have the scopes that were requested.
 
-let api = kittn.authorize('meowmeowmeow');
-```
-
-> Make sure to replace `meowmeowmeow` with your API key.
-
-Kittn uses API keys to allow access to the API. You can register a new Kittn API key at our [developer portal](http://example.com/developers).
-
-Kittn expects for the API key to be included in all API requests to the server in a header that looks like the following:
-
-`Authorization: meowmeowmeow`
-
-<aside class="notice">
-You must replace <code>meowmeowmeow</code> with your personal API key.
-</aside>
-
-# Kittens
-
-## Get All Kittens
-
-```ruby
-require 'kittn'
-
-api = Kittn::APIClient.authorize!('meowmeowmeow')
-api.kittens.get
-```
-
-```python
-import kittn
-
-api = kittn.authorize('meowmeowmeow')
-api.kittens.get()
-```
+> Request
 
 ```shell
-curl "http://example.com/api/kittens"
-  -H "Authorization: meowmeowmeow"
+curl -X POST 
+-d "grant_type=client_credentials&client_id=YOUR_CLIENT_ID&client_secret=YOUR_CLIENT_SECRET"
+https://login.autharmor.com/connect/token
 ```
 
-```javascript
-const kittn = require('kittn');
+The access token returned will be used as a Bearer token for all the other requests.
 
-let api = kittn.authorize('meowmeowmeow');
-let kittens = api.kittens.get();
-```
-
-> The above command returns JSON structured like this:
-
-```json
-[
-  {
-    "id": 1,
-    "name": "Fluffums",
-    "breed": "calico",
-    "fluffiness": 6,
-    "cuteness": 7
-  },
-  {
-    "id": 2,
-    "name": "Max",
-    "breed": "unknown",
-    "fluffiness": 5,
-    "cuteness": 10
-  }
-]
-```
-
-This endpoint retrieves all kittens.
-
-### HTTP Request
-
-`GET http://example.com/api/kittens`
-
-### Query Parameters
-
-Parameter | Default | Description
---------- | ------- | -----------
-include_cats | false | If set to true, the result will also include cats.
-available | true | If set to false, the result will include kittens that have already been adopted.
-
-<aside class="success">
-Remember — a happy kitten is an authenticated kitten!
-</aside>
-
-## Get a Specific Kitten
-
-```ruby
-require 'kittn'
-
-api = Kittn::APIClient.authorize!('meowmeowmeow')
-api.kittens.get(2)
-```
-
-```python
-import kittn
-
-api = kittn.authorize('meowmeowmeow')
-api.kittens.get(2)
-```
-
-```shell
-curl "http://example.com/api/kittens/2"
-  -H "Authorization: meowmeowmeow"
-```
-
-```javascript
-const kittn = require('kittn');
-
-let api = kittn.authorize('meowmeowmeow');
-let max = api.kittens.get(2);
-```
-
-> The above command returns JSON structured like this:
+> Response
 
 ```json
 {
-  "id": 2,
-  "name": "Max",
-  "breed": "unknown",
-  "fluffiness": 5,
-  "cuteness": 10
+  "access_token":"eyJhbGciOiJSUzI1N...",
+  "expires_in":600,
+  "token_type":"Bearer",
+  "scope":"aarmor.api.generate_invite_code aarmor.api.request_auth"
 }
 ```
 
-This endpoint retrieves a specific kitten.
+# Push Request
 
-<aside class="warning">Inside HTML code blocks like this one, you can't use Markdown, so use <code>&lt;code&gt;</code> blocks to denote code.</aside>
-
-### HTTP Request
-
-`GET http://example.com/kittens/<ID>`
-
-### URL Parameters
-
-Parameter | Description
---------- | -----------
-ID | The ID of the kitten to retrieve
-
-## Delete a Specific Kitten
-
-```ruby
-require 'kittn'
-
-api = Kittn::APIClient.authorize!('meowmeowmeow')
-api.kittens.delete(2)
-```
-
-```python
-import kittn
-
-api = kittn.authorize('meowmeowmeow')
-api.kittens.delete(2)
-```
+> Request
 
 ```shell
-curl "http://example.com/api/kittens/2"
-  -X DELETE
-  -H "Authorization: meowmeowmeow"
+
+curl -XPOST
+-H 'Authorization: Bearer TOKEN'
+-H "Content-type: application/json"
+-d '{
+  "auth_profile_id": "706751cf-012d-4576-b639-654d0dfbdb5c",
+  "action_name": "Login",
+  "short_msg": "Login requested detected from IP: 192.160.0.1",
+  "timeout_in_seconds": "120",
+  "accepted_auth_methods": [
+      {
+        "name": "mobiledevice",      
+        "rules": [
+          {
+            "name": "forcebiometric",
+            "value": "true"
+          }
+        ]
+      },
+      {
+        "name": "securitykey"     
+      }
+    ]
+  }'
+'https://api.autharmor.com/auth/request'
+
 ```
 
-```javascript
-const kittn = require('kittn');
+> Response
 
-let api = kittn.authorize('meowmeowmeow');
-let max = api.kittens.delete(2);
+```json
+
+{
+    "auth_history_id": "36f0d...",
+    "response_code": 2,
+    "response_message": "Success",
+    "authorized": true,
+    "auth_details": {
+        "request_details": {
+            "date": "2020-07-11T17:09:44.7860965Z",
+            "auth_profile_details": {
+                "auth_profile_id": "706751cf-012d-4576-b639-654d0dfbdb5c",
+                "nickname": "john_doe",
+                "ref_id": "123456789"
+            },
+            "location_data": {
+                "latitude": null,
+                "longitude": null
+            },
+            "accepted_auth_methods": [
+                {
+                    "name": "MobileDevice",
+                    "rules": [
+                        {
+                            "name": "ForceBiometric",
+                            "value": false
+                        }
+                    ]
+                },
+                {
+                    "name": "SecurityKey",
+                    "rules": []
+                }
+            ]
+        },
+        "response_details": {
+            "date": "2020-07-11T17:09:53.3862361Z",
+            "auth_method": {
+                "name": "MobileDevice",
+                "usetype": "biometric"
+            },
+            "auth_validation_details": {
+                "PublicKey": "MFkwEwYHKoZI....==",
+                "KeySize": "256",
+                "KeyType": "EC",
+                "SigningAlgorithm": "SHA256",
+                "CurveType": "secp256r1",
+                "KeyFormat": "x.509"
+            },
+            "secure_signed_message": {
+                "signed_data": "eyJtZXNzYWdlX2RhdGEi.....",
+                "signature_data": {
+                    "hash_value": "20bc1578...",
+                    "signature_data": "{\"signature_data\":{\"counter\":17,\"signature_value\":\"MEUCIH...=\",\"challenge\":\"20bc15....\"},\"metaData\":{},\"version\":1,\"format\":1,\"key_Id\":\"\"}",
+                    "auth_method_usetype": "biometric",
+                    "auth_method": "MobileDevice",
+                    "hash_method": "Sha256"
+                }
+            },
+            "mobile_device_details": {
+                "platform": "Android",
+                "model": "Samsung A50s"
+            }
+        }
+    }
+}
+
 ```
 
-> The above command returns JSON structured like this:
+# QR Invite
+
+> Request
+
+```shell
+
+curl -XPOST
+-H 'Authorization: Bearer TOKEN'
+-H "Content-type: application/json"
+-d '{
+  "nickname": "john_doe",
+  "reference_id": "123456789"
+}'
+'https://api.autharmor.com/invite/request'
+
+```
+
+> Response
 
 ```json
 {
-  "id": 2,
-  "deleted" : ":("
+    "auth_profile_id": "706751cf-012d-4576-b639-654d0dfbdb5c",
+    "invite_code": "43748ae...",
+    "date_expires": "2020-07-11T17:18:56.3058075Z",
+    "invite_type": "WebInviteAndOrQRCode",
+    "aa_sig": "6433C0A...."
 }
 ```
 
-This endpoint deletes a specific kitten.
 
-### HTTP Request
+| Param | Required | Description |
+| ---- | ----- | ---- | 
+| nickname | Yes | A nickname for your user to easily identify |
+| reference_id | No | An Optional value you can set to refer to later, such as an internal database id. |
 
-`DELETE http://example.com/kittens/<ID>`
 
-### URL Parameters
-
-Parameter | Description
---------- | -----------
-ID | The ID of the kitten to delete
 
