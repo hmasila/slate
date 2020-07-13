@@ -17,28 +17,16 @@ search: true
 
 # Introduction
 
-Welcome to the Auth Armor API! 
+Auth Armor turns smart mobile devices into modern secure authenticators preventing attacks and un-authorized access.
 
+Passwords and shared secrets are outdated and insecure. Account take-overs, password theft and breaches cost billions each year and are getting worse.
+
+Use Auth Armor to protect websites, apps, backoffice and more with our simple API. Get running in minutes.
+
+
+# Authorization
 
 To obtain an Access token, you must make a request to the Auth Armor OAuth2 server using the client_credentials OAuth2 grant.
-
-
-| Param | Required | Description |
-| ---- | ----- | ---- | 
-| client_id | Yes | Client ID from Auth Armor |
-| client_secret | Yes | Client Secret from Auth Armor |
-| scope | No | Permissions that the token will be allowed to perform |
-
-
-## API Access
-
-Both the `client_id` and `client_secret` are obtained via the developer dashboard located at [https://dashboard.autharmor.com](https://dashboard.autharmor.com)
-
-Login then select or create a project. Navigate to the Api Access section and create a new api client. when you create a client, you are asked to give the client permissions, or scopes; select one more more scopes here. Please see the scopes section for more info. After client creation, you will be presented with a `client_id` and `client_secret`. Copy these values into your request.
-
-## Scopes
-
-Scopes are permissions that the token will be allowed to perform. There are two scopes allowed. They are `aarmor.api.generate_invite_code` and `aarmor.api.request_auth`. When you create an api access client, you will be asked to select what scopes the client is allowed to perform. When requesting a token using that client, you can optionally leave the scope field blank. If left blank, all of the scopes that are assigned to the client will be applied to the token. If you specify the scopes in the token request, the token will then only have the scopes that were requested.
 
 > Request
 
@@ -48,7 +36,12 @@ curl -X POST
 https://login.autharmor.com/connect/token
 ```
 
-The access token returned will be used as a Bearer token for all the other requests.
+| Param | Required | Description |
+| ---- | ----- | ---- | 
+| client_id | Yes | Client ID from Auth Armor |
+| client_secret | Yes | Client Secret from Auth Armor |
+| scope | No | Permissions that the token will be allowed to perform |
+
 
 > Response
 
@@ -60,6 +53,19 @@ The access token returned will be used as a Bearer token for all the other reque
   "scope":"aarmor.api.generate_invite_code aarmor.api.request_auth"
 }
 ```
+
+## API Access
+
+Both the `client_id` and `client_secret` are obtained via the developer dashboard located at [https://dashboard.autharmor.com](https://dashboard.autharmor.com)
+
+Login then select or create a project. Navigate to the Api Access section and create a new api client. when you create a client, you are asked to give the client permissions, or scopes; select one more more scopes here. Please see the scopes section for more info. After client creation, you will be presented with a `client_id` and `client_secret`. Copy these values into your request.
+
+## Scopes
+
+Scopes are permissions that the token will be allowed to perform. There are two scopes allowed. They are `aarmor.api.generate_invite_code` and `aarmor.api.request_auth`. When you create an api access client, you will be asked to select what scopes the client is allowed to perform. When requesting a token using that client, you can optionally leave the scope field blank. If left blank, all of the scopes that are assigned to the client will be applied to the token. If you specify the scopes in the token request, the token will then only have the scopes that were requested.
+
+The access token returned will be used as a Bearer token for all the other requests.
+
 
 # Push Request
 
@@ -241,6 +247,51 @@ If you set to security key, then mobile device will not be allowed, meaning no p
 
 ```
 
+| Param | Description |
+| ---- | ---- | 
+| auth_history_id | This is the unique ID for the auth request.|
+| response_code | The response code result – 0 = unknown, 2 = success, 3 = declined, 4 = possible fraud attempt, 5 = timeout. |
+| response_message | The text representation of the result code.|
+| authorized | Boolean – if the auth request is authenticated. |
+| auth_details | Auth detail object, request and response details. |
+| request_details | Object for all the request details.|
+| date | The date the auth request was made. |
+| auth_profile_details | The details of the auth_profile that was targeted.|
+| auth_profile_id  | Echo back the ID in the request. |
+| nickname | The nickname of the auth_profile record. |
+| ref_id | The ref id of the auth profile record.|
+| location_data | If location data was provided in the request, it is echoed here. |
+| latitude | Latitude location.|
+| longitude | Longitude location. |
+| accepted_auth_methods | The accepted auth methods for this request. If it was provided, these values are echoed back. If not provided, then all methods are echoed back with default rules. |
+| name | The accepted method name.|
+| rules | The rules for the accepted auth method. |
+| response_details | Object for all the response details.|
+| date | The date the auth request was responded to. |
+| auth_method | The auth method that was used for the response. If there was a timeout, or declined, this will not be populated.|
+| name | The name of the auth method used.|
+| usetype  | The way the auth method was used. Options for mobile device are: biometric or pin. |
+| auth_validation_details | The details that can be used to validate the signature. |
+| public_key | The public key value used to validate the signature. |
+| key_size | The size of the public/private key.|
+| key_type | The type of key used. EC is the only key supported currently|
+| signing_algorithm | The type of hashing algorithm used to sign – the only possible value right now is SHA256. |
+| curve_type | The type of curve used if applicable. |
+| key_format | The format of the key, the only value right now is x.509.|
+| secure_signed_message  | This is the secured signed message payload. |
+| signed_data | This is a base64 payload of the data that was signed for the auth request. |
+| signature_data | The data that is used to validate the signed data.|
+| hash_value  | The hash of the signed_data value. |
+| signature_data | All the signature data relating to this auth. If the auth is a security key, then this is the u2f signature_data from the security key. If the auth is a mobile device, then this is signature data from the mobile device. |
+| auth_method_usetype | The method used to sign the message. |
+| auth_method | The auth method that was used to sign themessage.|
+| hash_method | The method that was used to hash the signed_data. Currently, the only value is sha256. |
+| mobile_device_details | The details of the mobile device that wasused to facilitate the auth. Even if the auth method was security key, there was still a mobile device where the app was installed. This is that data. |
+| platform | The mobile platform that was used (Android or iOS). |
+| model | The model of the device.|
+ 
+
+
 # Send Invite
 
 > Request
@@ -291,11 +342,11 @@ In this method, the user can either click a link and follow invite instructions,
 
 Invite Link format:
 
-https://invite.autharmor.com/?i=INVITE_CODE>&aa_sig=AA_SIG
+`https://invite.autharmor.com/?i=INVITE_CODE>&aa_sig=AA_SIG`
 
 Example:
 
-https://invite.autharmor.com/?i=aacc137b-e13e-4f35-9d3b-402d530d954c&aa_sig=6036145BEB43D02F61F5D41CE43F8BA5858ECBC2ED4AA7F35C8176BE37B92E68
+`https://invite.autharmor.com/?i=aacc137b-e13e-4f35-9d3b-402d530d954c&aa_sig=6036145BEB43D02F61F5D41CE43F8BA5858ECBC2ED4AA7F35C8176BE37B92E68`
 
 
 
