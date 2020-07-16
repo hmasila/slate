@@ -255,40 +255,50 @@ If you set to security key, then mobile device will not be allowed, meaning no p
 | authorized | Boolean – if the auth request is authenticated. |
 | auth_details | Auth detail object, request and response details. |
 | request_details | Object for all the request details.|
+| response_details | Object for all the response details.|
+
+Request Details
+
+| Param | Description |
+| ---- | ---- | 
 | date | The date the auth request was made. |
 | auth_profile_details | The details of the auth_profile that was targeted.|
-| auth_profile_id  | Echo back the ID in the request. |
-| nickname | The nickname of the auth_profile record. |
-| ref_id | The ref id of the auth profile record.|
+| auth_profile_details.auth_profile_id  | Echo back the ID in the request. |
+| auth_profile_details.nickname | The nickname of the auth_profile record. |
+| auth_profile_details.ref_id | The ref id of the auth profile record.|
 | location_data | If location data was provided in the request, it is echoed here. |
-| latitude | Latitude location.|
-| longitude | Longitude location. |
+| location_data.latitude | Latitude location.|
+| location_data.longitude | Longitude location. |
 | accepted_auth_methods | The accepted auth methods for this request. If it was provided, these values are echoed back. If not provided, then all methods are echoed back with default rules. |
-| name | The accepted method name.|
-| rules | The rules for the accepted auth method. |
-| response_details | Object for all the response details.|
+| accepted_auth_methods.name | The accepted method name.|
+| accepted_auth_methods.rules | The rules for the accepted auth method. |
+
+Response Details
+
+| Param | Description |
+| ---- | ---- | 
 | date | The date the auth request was responded to. |
 | auth_method | The auth method that was used for the response. If there was a timeout, or declined, this will not be populated.|
-| name | The name of the auth method used.|
-| usetype  | The way the auth method was used. Options for mobile device are: biometric or pin. |
+| auth_method.name | The name of the auth method used.|
+| auth_method.usetype  | The way the auth method was used. Options for mobile device are: biometric or pin. |
 | auth_validation_details | The details that can be used to validate the signature. |
-| public_key | The public key value used to validate the signature. |
-| key_size | The size of the public/private key.|
-| key_type | The type of key used. EC is the only key supported currently|
-| signing_algorithm | The type of hashing algorithm used to sign – the only possible value right now is SHA256. |
-| curve_type | The type of curve used if applicable. |
-| key_format | The format of the key, the only value right now is x.509.|
+| auth_validation_details public_key | The public key value used to validate the signature. |
+| auth_validation_details key_size | The size of the public/private key.|
+| auth_validation_details key_type | The type of key used. EC is the only key supported currently|
+| auth_validation_details signing_algorithm | The type of hashing algorithm used to sign – the only possible value right now is SHA256. |
+| auth_validation_details curve_type | The type of curve used if applicable. |
+| auth_validation_details key_format | The format of the key, the only value right now is x.509.|
 | secure_signed_message  | This is the secured signed message payload. |
-| signed_data | This is a base64 payload of the data that was signed for the auth request. |
-| signature_data | The data that is used to validate the signed data.|
-| hash_value  | The hash of the signed_data value. |
-| signature_data | All the signature data relating to this auth. If the auth is a security key, then this is the u2f signature_data from the security key. If the auth is a mobile device, then this is signature data from the mobile device. |
-| auth_method_usetype | The method used to sign the message. |
-| auth_method | The auth method that was used to sign themessage.|
-| hash_method | The method that was used to hash the signed_data. Currently, the only value is sha256. |
+| secure_signed_message signed_data | This is a base64 payload of the data that was signed for the auth request. |
+| secure_signed_message signature_data | The data that is used to validate the signed data.|
+| secure_signed_message signature_data.hash_value  | The hash of the signed_data value. |
+| secure_signed_message signature_data signature_data | All the signature data relating to this auth. If the auth is a security key, then this is the u2f signature_data from the security key. If the auth is a mobile device, then this is signature data from the mobile device. |
+| secure_signed_message signature_data auth_method_usetype | The method used to sign the message. |
+| secure_signed_message signature_data auth_method | The auth method that was used to sign themessage.|
+| secure_signed_message signature_data hash_method | The method that was used to hash the signed_data. Currently, the only value is sha256. |
 | mobile_device_details | The details of the mobile device that wasused to facilitate the auth. Even if the auth method was security key, there was still a mobile device where the app was installed. This is that data. |
-| platform | The mobile platform that was used (Android or iOS). |
-| model | The model of the device.|
+| mobile_device_details platform | The mobile platform that was used (Android or iOS). |
+| mobile_device_details model | The model of the device.|
  
 
 
