@@ -3,6 +3,7 @@ title: AuthArmor API Reference
 
 language_tabs: # must be one of https://git.io/vQNgJ
   - shell: cURL
+  - ruby: Ruby
 
 <!-- toc_footers:
   - <a href='#'>Sign Up for a Developer Key</a>
@@ -35,6 +36,13 @@ curl -X POST
 -d "grant_type=client_credentials&client_id=YOUR_CLIENT_ID&client_secret=YOUR_CLIENT_SECRET"
 https://login.autharmor.com/connect/token
 ```
+
+```ruby
+require "auth-armor"
+AuthArmor::Client.new(client_id: "CLIENT_ID", client_secret: "CLIENT_SECRET")
+
+```
+
 
 | Param | Required | Description |
 | ---- | ----- | ---- | 
@@ -100,6 +108,15 @@ curl -XPOST
 
 ```
 
+
+```ruby
+AuthArmor::Client.auth_request(
+  auth_profile_id: "AUTH_PROFILE_ID",
+  action_name: "Login",
+  short_msg: "This is a test message",
+)
+```
+
 | Param | Required | Description |
 | ---- | ----- | ---- | 
 | auth_profile_id | Yes |  This is the ID of the auth profile for your user. You get this value after you call the invite api, or you can get it from the dashboard after inviting the user. |
@@ -140,6 +157,16 @@ curl -XPOST
 
 ```
 
+```ruby
+AuthArmor::Client.auth_request(
+  auth_profile_id: "AUTH_PROFILE_ID",
+  action_name: "Login",
+  short_msg: "This is a test message",
+  accepted_auth_methods: "mobiledevice",
+  forcebiometric: true
+)
+```
+
 The current rules for mobileDevice are `forceBiometirc`. This can either be set to true or false.
 
 If `forceBiometric` is set to true, a mobile device will be required and biometrics will be required. Pin fallback and non-biometric devices will not be compatible with this method. Only biometrics, such as fingerprint or faceID will be allowed. 
@@ -168,6 +195,15 @@ curl -XPOST
   }'
 'https://api.autharmor.com/auth/request'
 
+```
+
+```ruby
+AuthArmor::Client.auth_request(
+  auth_profile_id: "AUTH_PROFILE_ID",
+  action_name: "Login",
+  short_msg: "This is a test message",
+  accepted_auth_methods: "securitykey"
+)
 ```
 
 At this time, there are no rules for security keys.
@@ -235,7 +271,7 @@ If you set to security key, then mobile device will not be allowed, meaning no p
             },
             "secure_signed_message": {
                 "signed_data": "eyJtZXNzYWdlX2RhdGEi.....",
-                "signature_data_info": {
+                "signature_data_details": {
                     "hash_value": "20bc1578...",
                     "signature_data": "{\"signature_data\":{\"counter\":17,\"signature_value\":\"MEUCIH...=\",\"challenge\":\"20bc15....\"},\"metaData\":{},\"version\":1,\"format\":1,\"key_Id\":\"\"}",
                     "auth_method_usetype": "biometric",
@@ -297,7 +333,7 @@ If you set to security key, then mobile device will not be allowed, meaning no p
             },
             "secure_signed_message": {
                 "signed_data": "eyJtZXNzYWdlX2RhdGEi.....",
-                "signature_data_info": {
+                "signature_data_details": {
                     "hash_value": "20bc1578...",
                     "signature_data": "{\"keyHandle\":\"bIap1cuTOBhl7VDd4Z56rFPkFJL0ow927f1kWI0SC3_oHjuTFxm7OUcHRrfavcjudIAkyuHiIC_WzKPAYaJPdA\",\"clientData\":\"eyJ0eXAiOiJuYXZpZ2F0b3IuaWQuZ2V0QXNzZXJ0aW9uIiwiY2hhbGxlbmdlIjoiNzQyNjJhZDU4NTYzMjQxZjQ0ZjNjNzFmZjZiYjA3MWQ2NDUyNTc5YmQzZjRkZWI4M2UzZmZiYzU1YWU4OThjZSIsIm9yaWdpbiI6ImFuZHJvaWQ6YXBrLWtleS1oYXNoOjRqMFpQRFNEMnJSWmlDV0JqR051aFRBNDNCcmZyV0orYitRc2E2aGZkaGsifQ\",\"signatureData\":\"AQAAAIYwRQIgGcCfCahRWxI5NbFvLY_0Nsc0hgAj7I67i9d0f4F3mCoCIQC4oByT5AW2GaqWOjeHLCr9pszmmG9pLqFBQEO7l1arQw\"}",
                     "auth_method_usetype": "u2f_securitykey",
@@ -387,9 +423,9 @@ If you set to security key, then mobile device will not be allowed, meaning no p
 | Param | Description |
 | ---- | ---- | 
 | signed_data | This is a base64 payload of the data that was signed for the auth request. |
-| signature_data_info | The data that is used to validate the signed data. More details defined in the signature data info table.|
+| signature_data_details | The data that is used to validate the signed data. More details defined in the signature data details table.|
 
-<b><span style="color: black">Signature Data Info</span></b>
+<b><span style="color: black">Signature Data Details</span></b>
 
 | Param | Description |
 | ---- | ---- | 
@@ -445,6 +481,13 @@ curl -XPOST
 
 ```
 
+
+```ruby
+AuthArmor::Client.invite_request(
+  nickname: "NICKNAME"
+)
+```
+
 Before you can send auth requests, you must invite users to your project. You can use the invite API to request an invite, then send to your users. Auth Armor supports two ways users can be invited. Either methods first needs a call to the Auth Armor invite API
 
 | Param | Required | Description |
@@ -454,7 +497,12 @@ Before you can send auth requests, you must invite users to your project. You ca
 
 ## QR code
 
-A QR code can be generated and then scanned, much like many of the other authenticators out there. In the app, a user simply needs to scan the QR code to get setup for your project.
+```ruby
+AuthArmor::Client.generate_qr_code
+
+```
+
+> Example
 
 To use the QR code format, please format a json payload like below:
 
@@ -470,19 +518,27 @@ To use the QR code format, please format a json payload like below:
 }
 ```
 
+A QR code can be generated and then scanned, much like many of the other authenticators out there. In the app, a user simply needs to scan the QR code to get setup for your project.
+
+
+
 Then generate a QR code using this payload text. The QR code can then be scannedin the app
 
 ## Invite link
+
+```ruby
+AuthArmor::Client.get_invite_link
+```
+
+> Example
+
+> `https://invite.autharmor.com/?i=aacc137b-e13e-4f35-9d3b-402d530d954c&aa_sig=6036145BEB43D02F61F5D41CE43F8BA5858ECBC2ED4AA7F35C8176BE37B92E68`
 
 In this method, the user can either click a link and follow invite instructions, or by using our client SDK, you can open a small pop-up window that will drive the invite process.
 
 Invite Link format:
 
 `https://invite.autharmor.com/?i=INVITE_CODE>&aa_sig=AA_SIG`
-
-Example:
-
-`https://invite.autharmor.com/?i=aacc137b-e13e-4f35-9d3b-402d530d954c&aa_sig=6036145BEB43D02F61F5D41CE43F8BA5858ECBC2ED4AA7F35C8176BE37B92E68`
 
 
 
