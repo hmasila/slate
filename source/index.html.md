@@ -4,6 +4,7 @@ title: AuthArmor API Reference
 language_tabs: # must be one of https://git.io/vQNgJ
   - shell: cURL
   - ruby: Ruby
+  - php: PHP
 
 <!-- toc_footers:
   - <a href='#'>Sign Up for a Developer Key</a>
@@ -41,6 +42,12 @@ https://login.autharmor.com/connect/token
 require "auth-armor"
 AuthArmor::Client.new(client_id: "CLIENT_ID", client_secret: "CLIENT_SECRET")
 
+```
+
+```php 
+<?
+
+>
 ```
 
 
