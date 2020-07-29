@@ -82,7 +82,7 @@
         });
         highlight.call(searchInput);
       } else {
-        searchResults.html('<li></li>');
+        searchResults.html('<li class="no-results-text"></li>');
         $('.search-results li').text('No Results Found for "' + searchInput.value + '"');
       }
     } else {
