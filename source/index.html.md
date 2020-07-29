@@ -45,9 +45,11 @@ AuthArmor::Client.new(client_id: "CLIENT_ID", client_secret: "CLIENT_SECRET")
 ```
 
 ```php 
-<?
-
->
+<?php
+  // Place your credentials in autharmor_creds.php. File should contain the following 3 lines:
+  $this->client_id = "YourClientID";
+  $this->client_secret = "YourClientSecret";
+?>
 ```
 
 
@@ -124,6 +126,17 @@ AuthArmor::Client.auth_request(
 )
 ```
 
+```php
+<?php
+  AuthArmor->auth_request(
+    auth_profile_id: "AUTH_PROFILE_ID",
+    action_name: "Login",
+    short_msg: "This is a test message"
+  )
+?>
+```
+
+
 | Param | Required | Description |
 | ---- | ----- | ---- | 
 | auth_profile_id | Yes |  This is the ID of the auth profile for your user. You get this value after you call the invite api, or you can get it from the dashboard after inviting the user. |
@@ -174,6 +187,23 @@ AuthArmor::Client.auth_request(
 )
 ```
 
+```php
+<?php
+  AuthArmor->auth_request(
+    auth_profile_id: "AUTH_PROFILE_ID",
+    action_name: "Login",
+    short_msg: "This is a test message",
+    accepted_auth_methods: [{
+      "name": "mobiledevice",
+      "rules": {
+        "name": "forcebiometric",
+        "value": true
+      }
+    }]
+  )
+?>
+```
+
 The current rules for mobileDevice are `forceBiometirc`. This can either be set to true or false.
 
 If `forceBiometric` is set to true, a mobile device will be required and biometrics will be required. Pin fallback and non-biometric devices will not be compatible with this method. Only biometrics, such as fingerprint or faceID will be allowed. 
@@ -211,6 +241,19 @@ AuthArmor::Client.auth_request(
   short_msg: "This is a test message",
   accepted_auth_methods: "securitykey"
 )
+```
+
+```php
+<?php
+  AuthArmor->auth_request(
+    auth_profile_id: "AUTH_PROFILE_ID",
+    action_name: "Login",
+    short_msg: "This is a test message",
+    accepted_auth_methods: [{
+      "name": "securitykey"
+    }]
+  )
+?>
 ```
 
 At this time, there are no rules for security keys.
@@ -493,6 +536,12 @@ curl -XPOST
 AuthArmor::Client.invite_request(
   nickname: "NICKNAME"
 )
+```
+
+```php
+<php
+  AuthArmor->invite_request(nickname: "NICKNAME")
+?>
 ```
 
 Before you can send auth requests, you must invite users to your project. You can use the invite API to request an invite, then send to your users. Auth Armor supports two ways users can be invited. Either methods first needs a call to the Auth Armor invite API
