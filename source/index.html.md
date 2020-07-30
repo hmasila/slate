@@ -19,12 +19,28 @@ search: true
 
 # Introduction
 
+```ruby
+
+# Use rubygems
+
+gem install auth-armor
+
+
+# Or use bundler
+
+gem 'auth-armor'
+
+
+# Then require the gem.
+
+require 'auth-armor'
+```
+
 Auth Armor turns smart mobile devices into modern secure authenticators preventing attacks and un-authorized access.
 
 Passwords and shared secrets are outdated and insecure. Account take-overs, password theft and breaches cost billions each year and are getting worse.
 
 Use Auth Armor to protect websites, apps, backoffice and more with our simple API. Get running in minutes.
-
 
 # Authorization
 
