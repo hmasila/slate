@@ -135,6 +135,7 @@ Before you can send auth requests, you must invite users to your project. You ca
 | ---- | ----- | ---- | 
 | nickname | Yes |  This is a friendly display name for your user. It would be best to set the nickname to the username value or something similar so you can relate to your system. If your usernames are email addresses, consider masking the email address before using as a nickname to avoid personal information being stored in Auth Armor. You can search history using this ID |
 | reference_id | No | This is an optional value that you can set to further cross reference your records. For example, you could set this value to your unique value in your system such as a UUID, a row ID, or some other value. You can search history using this ID. |
+| reset_and_reinvite | No | Default is false. If you need to reset the current user and reinvite, set this flag to true. This will remove all mobile devices and/or active pending invites and create a new invite. Use caution when using this - it will reset any existing user with this nickname |
 
 ## QR code
 
