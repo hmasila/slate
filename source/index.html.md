@@ -112,7 +112,7 @@ curl -XPOST
   "nickname": "john_doe",
   "reference_id": "123456789"
 }'
-'https://api.autharmor.com/invite/request'
+'https://api.autharmor.com/v1/invite/request'
 
 ```
 
@@ -224,7 +224,7 @@ curl -XPOST
   "short_msg": "Login requested detected from IP: 192.160.0.1",
   "nonce": "some unique value of your choice here"
   }'
-'https://api.autharmor.com/auth/request'
+'https://api.autharmor.com/v1/auth/request'
 
 ```
 
@@ -289,7 +289,7 @@ curl -XPOST
       }
     ]
   }'
-'https://api.autharmor.com/auth/request'
+'https://api.autharmor.com/v1/auth/request'
 
 ```
 
@@ -349,7 +349,7 @@ curl -XPOST
       }
     ]
   }'
-'https://api.autharmor.com/auth/request'
+'https://api.autharmor.com/v1/auth/request'
 
 ```
 
