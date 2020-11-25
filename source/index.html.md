@@ -1,10 +1,8 @@
 ---
-title: AuthArmor API Reference
+title: KumoScale Provisioner API
 
 language_tabs: # must be one of https://git.io/vQNgJ
   - shell: cURL
-  - ruby: Ruby
-  - php: PHP
 
 <!-- toc_footers:
   - <a href='#'>Sign Up for a Developer Key</a>
@@ -19,87 +17,164 @@ search: true
 
 # Introduction
 
-```ruby
+This document specifies the detailed requests/responses JSONs structures of the KumoScale's REST APIs.
+Notes! – 
+GET responses might have additional fields, which are not described in this document. Those fields are usually for internal usage and should be ignored if not mentioned in the API description.
+Unrecognized JSON fields in POST requests will be ignored by the KumoScale engine.
 
-# Use rubygems
+# Inventory Management 
 
-gem install auth-armor
-
-
-# Or use bundler
-
-gem 'auth-armor'
+The inventory management APIs provide the means for maintaining the pool of KumoScale storage nodes, available for volume allocation.
+This includes monitoring the pools its health, maintaining its coherency and persistency, and extracting the pool’s information.
+Creating and modifying the pool is done via operators.
 
 
-# Then require the gem.
-
-require 'auth-armor'
-```
-
-Auth Armor turns smart mobile devices into modern secure authenticators preventing attacks and un-authorized access.
-
-Passwords and shared secrets are outdated and insecure. Account take-overs, password theft and breaches cost billions each year and are getting worse.
-
-Use Auth Armor to protect websites, apps, backoffice and more with our simple API. Get running in minutes.
-
-# Authorization
-
-To obtain an Access token, you must make a request to the Auth Armor OAuth2 server using the client_credentials OAuth2 grant.
-
+## List Backends
 > Request
 
 ```shell
-curl -X POST 
--d "grant_type=client_credentials&client_id=YOUR_CLIENT_ID&client_secret=YOUR_CLIENT_SECRET"
-https://login.autharmor.com/connect/token
+
+curl -k --cert ./ssdtoolbox.pem https://10.93.66.121:8090/backends
 ```
-
-```ruby
-require "auth-armor"
-AuthArmor::Client.new(client_id: "CLIENT_ID", client_secret: "CLIENT_SECRET")
-
-```
-
-```php 
-<?php
-  // Place your credentials in autharmor_creds.php. File should contain the following 3 lines:
-  $this->client_id = "YourClientID";
-  $this->client_secret = "YourClientSecret";
-?>
-```
-
-
-| Param | Required | Description |
-| ---- | ----- | ---- | 
-| client_id | Yes | Client ID from Auth Armor |
-| client_secret | Yes | Client Secret from Auth Armor |
-| scope | No | Permissions that the token will be allowed to perform |
 
 
 > Response
 
 ```json
-{
-  "access_token":"eyJhbGciOiJSUzI1N...",
-  "expires_in":600,
-  "token_type":"Bearer",
-  "scope":"aarmor.api.generate_invite_code aarmor.api.request_auth"
-}
+[
+  {
+    "persistentID": "0c:c4:7a:66:96:83",
+      "mgmtIPs": [
+        "172.28.116.13"
+      ],
+      "rack": "Rack1",
+      "zone": "Zone2",
+      "region": "Region2",
+      "inUse": true,
+      "state": "Available",
+      "totalCapacity": 8001574060032,
+      "availableCapacity": 8001431797760,
+      "lastProbTime": 1576066112110,
+      "probeInterval": 60,
+      "totalBW": 0,
+      "availableBW": 0,
+      "totalIOPS": 0,
+       "availableIOPS": 0,
+      "portals":[{
+        "ip":"10.10.10.1",
+        "port":4420,
+        "transport":"RoCEv2"
+      }],
+    "hostId": "5836c3cc-1c7e-4f2e-9698-e39175a41bd7" 
+  }
+]
+
 ```
 
-## API Access
+### Request
 
-Both the `client_id` and `client_secret` are obtained via the developer dashboard located at [https://dashboard.autharmor.com](https://dashboard.autharmor.com)
+No URI parameters.
 
-Login then select or create a project. Navigate to the Api Access section and create a new api client. when you create a client, you are asked to give the client permissions, or scopes; select one more more scopes here. Please see the scopes section for more info. After client creation, you will be presented with a `client_id` and `client_secret`. Copy these values into your request.
 
-## Scopes
+### Response
 
-Scopes are permissions that the token will be allowed to perform. There are two scopes allowed. They are `aarmor.api.generate_invite_code` and `aarmor.api.request_auth`. When you create an api access client, you will be asked to select what scopes the client is allowed to perform. When requesting a token using that client, you can optionally leave the scope field blank. If left blank, all of the scopes that are assigned to the client will be applied to the token. If you specify the scopes in the token request, the token will then only have the scopes that were requested.
+| Param | Type | Description |
+| ---- | ----- | ---- | 
+| persistentID | String | KS persistent ID (~ MAC address) |
+| mgmtIPs | List<String> | KS Management IP or DNS name |
+| rack | String | KS location Rack ID   |
+| zone | String | Accessible Zone ID  (e.g., shared switch)   |
+| region | String | Accessible Region ID  (e.g., shared cage)   |
+| inUse | Boolean | Is it used for volume management   |
+| state | Enum | Available / Unavailable |
+| totalCapacity | Long | KS current total capacity -  The sum of all SSDs capacity |
+| availableCapacity | Long | KS sum of all available space    |
+| lastProbTime | Long | Last probe time    |
+| probeInterval | Int | Probe interval in secs   |
+| totalBW | Long | KS total potential bandwidth in B/s   |
+| availableBW | Long | KS available bandwidth in B/s (unused out of potential value) |
+| totalIOPS | Long | KS total potential IOPS    |
+| availableIOPS | Long | KS available IOPS (unused out of potential value)    |
+| portals | List<String> | A list of portals. Each entry includes the following parameters: ip – the ip address of the portal, port – the port of the portal, transport – the transport type of the portal   |
+| hostId | String | The host id   |
 
-The access token returned will be used as a Bearer token for all the other requests.
 
-# Send Invite
+## Get Backend by ID
+
+Retrieve a KumoScale backend and its details from the Provisioner’s pool according to its ID
+
+>Request
+
+
+```shell
+curl -k --cert ./ssdtoolbox.pem https://10.93.66.121:8090/backends/0c:c4:7a:66:96:83
+```
+
+>Response
+
+```json
+{
+  "persistentID": "0c:c4:7a:66:96:83",
+    "mgmtIPs": [
+      "172.28.116.13"
+    ],
+    "rack": "Rack1",
+    "zone": "Zone2",
+    "region": "Region2",
+    "inUse": true,
+    "state": "Available",
+    "totalCapacity": 8001574060032,
+    "availableCapacity": 8001431797760,
+    "lastProbTime": 1576066112110,
+    "probeInterval": 60,
+    "totalBW": 0,
+    "availableBW": 0,
+    "totalIOPS": 0,
+    "availableIOPS": 0,
+    "portals":[{
+      "ip":"10.10.10.1",
+      "port":4420,
+      "transport":"RoCEv2"
+    }],
+  "hostId": "5836c3cc-1c7e-4f2e-9698-e39175a41bd7" 
+ }
+
+```
+
+
+### Request
+
+URI parameters.
+
+| Param | Type | Is Mandatory | Description |
+| ---- | ----- | ---- | ---- |
+| persistentID | String | Mandatory | The persistent ID of the backend |
+
+### Response
+
+| Param | Type | Description |
+| ---- | ----- | ---- | 
+| persistentID | String | KS persistent ID (~ MAC address) |
+| mgmtIPs | List<String> | KS Management IP or DNS name |
+| rack | String | KS location Rack ID   |
+| zone | String | Accessible Zone ID  (e.g., shared switch)   |
+| region | String | Accessible Region ID  (e.g., shared cage)   |
+| inUse | Boolean | Is it used for volume management   |
+| state | Enum | Available / Unavailable |
+| totalCapacity | Long | KS current total capacity -  The sum of all SSDs capacity |
+| availableCapacity | Long | KS sum of all available space    |
+| lastProbTime | Long | Last probe time    |
+| probeInterval | Int | Probe interval in secs   |
+| totalBW | Long | KS total potential bandwidth in B/s   |
+| availableBW | Long | KS available bandwidth in B/s (unused out of potential value) |
+| totalIOPS | Long | KS total potential IOPS    |
+| availableIOPS | Long | KS available IOPS (unused out of potential value)    |
+| portals | List<String> | A list of portals. Each entry includes the following parameters: ip – the ip address of the portal, port – the port of the portal, transport – the transport type of the portal   |
+| hostId | String | The host id   |
+
+
+
+# Multi-Tenancy Management
 
 > Request
 
@@ -117,17 +192,6 @@ curl -XPOST
 ```
 
 
-```ruby
-AuthArmor::Client.invite_request(
-  nickname: "NICKNAME"
-)
-```
-
-```php
-<php
-  AuthArmor->invite_request(nickname: "NICKNAME")
-?>
-```
 
 Before you can send auth requests, you must invite users to your project. You can use the invite API to request an invite, then send to your users. Auth Armor supports two ways users can be invited. Either methods first needs a call to the Auth Armor invite API
 
@@ -139,10 +203,6 @@ Before you can send auth requests, you must invite users to your project. You ca
 
 ## QR code
 
-```ruby
-AuthArmor::Client.generate_qr_code
-
-```
 
 > Example
 
@@ -168,9 +228,7 @@ Then generate a QR code using this payload text. The QR code can then be scanned
 
 ## Invite link
 
-```ruby
-AuthArmor::Client.get_invite_link
-```
+
 
 > Example
 
@@ -229,26 +287,6 @@ curl -XPOST
 ```
 
 
-```ruby
-AuthArmor::Client.auth_request(
-  nickname: "sample_user",
-  action_name: "Login",
-  short_msg: "This is a test message",
-  nonce: "some unique value of your choice here"
-)
-```
-
-```php
-<?php
-  AuthArmor->auth_request(
-    nickname: "sample_user",
-    action_name: "Login",
-    short_msg: "This is a test message",
-    nonce: "some unique value of your choice here"
-  )
-?>
-```
-
 
 | Param | Required | Description |
 | ---- | ----- | ---- | 
@@ -293,35 +331,6 @@ curl -XPOST
 
 ```
 
-```ruby
-AuthArmor::Client.auth_request(
-  nickname: "sample_user",
-  action_name: "Login",
-  short_msg: "This is a test message",
-  nonce: "some unique value of your choice here",
-  accepted_auth_methods: "mobiledevice",
-  forcebiometric: true
-)
-```
-
-```php
-<?php
-  AuthArmor->auth_request(
-    nickname: "sample_user",
-    action_name: "Login",
-    short_msg: "This is a test message",
-    nonce: "some unique value of your choice here",
-    accepted_auth_methods: [{
-      "name": "mobiledevice",
-      "rules": {
-        "name": "forcebiometric",
-        "value": true
-      }
-    }]
-  )
-?>
-```
-
 The current rules for mobileDevice are `forceBiometirc`. This can either be set to true or false.
 
 If `forceBiometric` is set to true, a mobile device will be required and biometrics will be required. Pin fallback and non-biometric devices will not be compatible with this method. Only biometrics, such as fingerprint or faceID will be allowed. 
@@ -353,29 +362,6 @@ curl -XPOST
 
 ```
 
-```ruby
-AuthArmor::Client.auth_request(
-  nickname: "sample_user",
-  action_name: "Login",
-  short_msg: "This is a test message",
-  nonce: "some unique value of your choice here",
-  accepted_auth_methods: "securitykey"
-)
-```
-
-```php
-<?php
-  AuthArmor->auth_request(
-    nickname: "sample_user",
-  action_name: "Login",
-  short_msg: "This is a test message",
-  nonce: "some unique value of your choice here",
-    accepted_auth_methods: [{
-      "name": "securitykey"
-    }]
-  )
-?>
-```
 
 At this time, there are no rules for security keys.
 
@@ -641,3 +627,44 @@ If you set to security key, then mobile device will not be allowed, meaning no p
  
 
 
+-----------------------------------------------------
+
+## Bucketlists
+
+> Using Bucketlists
+
+```shell
+
+curl -XPOST
+-H 'Authorization: Bearer TOKEN'
+-H "Content-type: application/json"
+-d '{
+  "name": "vacation",
+  "done": "false",
+  "cost": 1000,
+  }'
+'https://api.autharmor.com/v1/bucketlists'
+
+```
+
+
+| Param | Required | Type | Description |
+| ---- | ----- | ---- |  ---- | 
+| name | Yes |  string |  The name of the bucketlist. |
+| done | No |   boolean | Is the bucketlist done. Defaults to false |
+| cost | Yes |   integer | What's the cost of the bucketlist |
+
+## Response
+
+```json
+{
+    "id": 44,
+    "name": "vacation",
+    "items": [],
+    "date_created": "2020-10-20  3:52:18",
+    "date_modified": "2020-10-20  3:52:18",
+    "created_by": "John Doe"
+}
+```
+
+The response uses the logged user as the creator of the bucketlist

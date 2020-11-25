@@ -28,7 +28,7 @@ $examples-bg: #212329 !default;
 $code-bg: #1E2224 !default;
 $code-annotation-bg: #191D1F !default;
 $nav-subitem-bg: #1E2224 !default;
-$nav-active-bg: #2db4b4a3 !default;
+$nav-active-bg: #1abcef !default;
 $nav-active-parent-bg: #1E2224 !default; // parent links of the current section
 $logo-bg: #343742 !default;
 $lang-select-border: #000 !default;
@@ -72,7 +72,7 @@ $phone-width: $tablet-width - $nav-width !default; // min width before reverting
 ////////////////////
 %default-font {
   font-family: Montserrat, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, Montserrat, san-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol";
-  font-size: 15px;
+  font-size: 13px;
 }
 
 %header-font {
